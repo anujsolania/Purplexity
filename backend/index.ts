@@ -1,10 +1,10 @@
-import { express } from "express";
+import express from "express";
 import { tavily } from "@tavily/core";
-import { PROMPT_TEMPLATE } from "./prompt";
-import { Output, streamText } from "ai";
-import z, { url } from "zod";
+import { PROMPT_TEMPLATE, SYSTEM_PROMPT } from "./prompt";
+import { streamText } from "ai";
+import { google } from "@ai-sdk/google";
 
-const client = tavily({ apiKey: process.env.AVILY_API_KEY });
+const client = tavily({ apiKey: process.env.TAVILY_API_KEY });
 
 const app = express();
 
@@ -12,6 +12,10 @@ app.use(express.json());
 
 app.post("/purpexility_ask", async (req, res) => {
   //get the user query
+  if (!req.body || !req.body.query) {
+    res.status(400).json({ error: "Missing query in body" });
+    return;
+  }
   const userQuery = req.body.query;
 
   //do web search
@@ -29,19 +33,14 @@ app.post("/purpexility_ask", async (req, res) => {
 
   //hit the LLM api and stream the response
   const result = streamText({
-    model: "openai/gpt-5.4",
+    model: google("gemini-flash-latest"),
     prompt: PROMPT,
-    output: Output.object({
-      schema: z.object({
-        followUps: z.array(z.string()),
-        answers: z.string(),
-      }),
-    }),
+    system: SYSTEM_PROMPT,
   });
 
   //required headers
   res.header("Cache-Control", "no-cache");
-  res.header("Content-Type", "text/event-stream");
+  res.header("Content-Type", "text/plain");
 
   for await (const textPart of result.textStream) {
     res.write(textPart);
@@ -57,6 +56,7 @@ app.post("/purpexility_ask", async (req, res) => {
   res.write("</SOURCES>");
 
   //end the stream
+  res.end();
 });
 
-app.listen(3000);
+app.listen(3000, () => console.log("server is running"));
