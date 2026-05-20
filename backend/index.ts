@@ -2,18 +2,12 @@ import express from "express";
 import { tavily } from "@tavily/core";
 import { PROMPT_TEMPLATE, SYSTEM_PROMPT } from "./prompt";
 import { streamText } from "ai";
-import { google } from "@ai-sdk/google";
-
+import { groq } from "@ai-sdk/groq";
 const client = tavily({ apiKey: process.env.TAVILY_API_KEY });
 
 const app = express();
 
 app.use(express.json());
-
-// Prevent background Vercel AI SDK errors (like 503 Overload) from crashing the entire server
-process.on("unhandledRejection", (reason, promise) => {
-  console.error("Unhandled Rejection (ignored to prevent crash):", reason);
-});
 
 app.post("/purpexility_ask", async (req, res) => {
   try {
@@ -39,14 +33,10 @@ app.post("/purpexility_ask", async (req, res) => {
 
     //hit the LLM api and stream the response
     const result = streamText({
-      model: google("gemini-1.5-flash"),
+      model: groq("llama-3.3-70b-versatile"),
       prompt: PROMPT,
       system: SYSTEM_PROMPT,
     });
-
-    // Prevent unhandled promise rejections from crashing the server
-    // The Vercel AI SDK exposes multiple promises. If the API fails, we must catch them all.
-    Promise.all([result.text, result.usage, result.warnings, result.response]).catch(() => {});
 
     //required headers
     res.header("Cache-Control", "no-cache");
@@ -73,9 +63,9 @@ app.post("/purpexility_ask", async (req, res) => {
   } catch (error: any) {
     console.error("API Request Failed:", error);
     if (!res.headersSent) {
-      res.status(503).json({ error: "Google Gemini API is currently overloaded. Please try again in a few minutes." });
+      res.status(503).json({ error: "Groq API is currently overloaded. Please try again in a few minutes." });
     } else {
-      res.write(`data: ${JSON.stringify("\n\n[ERROR: Google Gemini API is overloaded. Please try again.]")}\n\n`);
+      res.write(`data: ${JSON.stringify("\n\n[ERROR: Groq API is overloaded. Please try again.]")}\n\n`);
       res.end();
     }
   }
