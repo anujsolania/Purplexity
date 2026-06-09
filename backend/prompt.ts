@@ -3,34 +3,29 @@ YOU DONT HAVE ACCESS TO ANY TOOLS. You are being given all the context that is n
 to answer the query.
 
 You also need to return follow up questions to the user based on the question they have asked.
-The response needs to be structured like this -
+RESPOND ONLY WITH VALID JSON in this exact format:
+{
+  "answer": "Your detailed answer here",
+  "follow_ups": [
+    "first follow up question",
+    "second follow up question",
+    "third follow up question"
+  ]
+}
 
-<ANSWER>
-This is where the actual query should be answered
-</ANSWER>
-
-<FOLLOW_UPS>
-    <question>first follow up question</question>
-    <question>second follow up question</question>
-    <question>third follow up question</question>
-</FOLLOW_UPS>
-
-
-Example -
+Example:
 
 Query - I want to learn rust, can u suggest me the best ways to do it
 
-Response -
-
-<ANSWER>
-For sure, the best resource to learn rust is the rust book
-</ANSWER>
-
-<FOLLOW_UPS>
-    <question>How can I learn advanced rust?</question>
-    <question>How is rust better than typescript?</question>
-    <question>What are the best rust projects for beginners?</question>
-</FOLLOW_UPS>
+Response:
+{
+  "answer": "For sure, the best resource to learn rust is the rust book. It provides comprehensive coverage of Rust fundamentals and advanced concepts.",
+  "follow_ups": [
+    "How can I learn advanced rust?",
+    "How is rust better than typescript?",
+    "What are the best rust projects for beginners?"
+  ]
+}
 `;
 
 export const PROMPT_TEMPLATE = `

@@ -55,26 +55,34 @@ app.post("/purpexility_ask", async (req, res) => {
     res.header("Connection", "keep-alive");
     res.flushHeaders();
 
+    let fullResponse = "";
+    // Stream raw chunks in real-time
     for await (const chunk of stream) {
-      // SSE requires each message to start with "data: " and end with two newlines
-      // We stringify the chunk to handle any inner newlines safely
-      // res.write(`data: ${JSON.stringify(textPart)}\n\n`);
-      // process.stdout.write(chunk.choices[0]?.delta?.content || "");
-      res.write(
-        `data: ${JSON.stringify(chunk.choices[0]?.delta?.content || "")}\n\n`
-      );
+      const content = chunk.choices[0]?.delta?.content || "";
+      fullResponse += content;
+      // Send raw content immediately
+      res.write(`data: ${JSON.stringify({ type: "RAW_CHUNK", content })}\n\n`);
     }
 
-    //stream back the responses
-    res.write(`data: ${JSON.stringify("<SOURCES>")}\n\n`);
+    // Parse the complete JSON response
+    let parsedResponse = { answer: "", follow_ups: [] };
+    try {
+      parsedResponse = JSON.parse(fullResponse);
+    } catch (e) {
+      console.error("Failed to parse LLM response as JSON:", e);
+      parsedResponse = { answer: fullResponse, follow_ups: [] };
+    }
 
+    // Send follow-ups
+    res.write(`data: ${JSON.stringify({ type: "FOLLOW_UPS", content: parsedResponse.follow_ups })}\n\n`);
+
+    // Send sources
     res.write(
-      `data: ${JSON.stringify(
-        webSearchResults.map((result) => ({ url: result.url }))
-      )}\n\n`
+      `data: ${JSON.stringify({
+        type: "SOURCES",
+        content: webSearchResults.map((result) => ({ url: result.url })),
+      })}\n\n`
     );
-
-    res.write(`data: ${JSON.stringify("</SOURCES>")}\n\n`);
 
     //end the stream
     res.end();
