@@ -125,7 +125,15 @@ app.post("/purpexility_ask", async (req, res) => {
 
     const followUpsText = followUps.choices[0]?.message.content;
 
-    const parsed = JSON.parse(followUpsText ?? "");
+    let parsed = {
+      follow_ups: [],
+    };
+
+    try {
+      parsed = JSON.parse(followUpsText ?? "");
+    } catch (error) {
+      console.log("JSON parsing failed");
+    }
 
     // Send follow-ups
     res.write(
