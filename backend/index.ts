@@ -12,15 +12,6 @@ const app = express();
 
 app.use(express.json());
 
-const res = await prisma.user.create({
-  data: {
-    name: "Anuj Solania",
-    email: "[EMAIL_ADDRESS]",
-    provider: "Github"
-  }
-})
-
-console.log(res)
 
 app.post("/purpexility_ask", async (req, res) => {
   try {
