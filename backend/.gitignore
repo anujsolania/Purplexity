@@ -30,7 +30,12 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 # IntelliJ based IDEs
 .idea
 
-# Finder (MacOS) folder config
+# Finder (MacOS) / Explorer (Windows) folder config
 .DS_Store
+Thumbs.db
 
-/generated/prisma
+# VS Code settings
+.vscode/
+
+/prisma/generated
+
