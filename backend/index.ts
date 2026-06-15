@@ -2,6 +2,7 @@ import express from "express";
 import { tavily } from "@tavily/core";
 import { PROMPT_TEMPLATE, SYSTEM_PROMPT } from "./prompt";
 import Groq from "groq-sdk";
+import { prisma } from "./db";
 
 const client = tavily({ apiKey: process.env.TAVILY_API_KEY });
 
