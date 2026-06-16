@@ -9,7 +9,7 @@ import { useNavigate } from "react-router";
 
 export default function Dashboard() {
     const navigate = useNavigate();
-    const [user, setUser] = useState< User | undefined>();
+    const [user, setUser] = useState< User | null>(null);
 
     useEffect(() => {
         async function fetchUser() {
@@ -30,7 +30,15 @@ export default function Dashboard() {
                     navigate("/auth")
                 }}> Go to SIGIN</button>
             ) : (
-                <div>user email : {user?.email}</div>
+                user && <div>
+                    user email : {user?.email}
+                    <button onClick={() => {
+                        supabase.auth.signOut();
+                        setUser(null);
+                        navigate("/")
+                    }} >LOGOUT</button>
+                    </div> 
+               
             )}
         </div>
     )
