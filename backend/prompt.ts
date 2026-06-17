@@ -28,10 +28,34 @@ Response:
 }
 `;
 
-export const PROMPT_TEMPLATE = `
-## Web search results
-{{WEB_SEARCH_RESULTS}}
+export const getPrompt = (webSearchResults: any, userQuery: string) => {
+  return `
+    Web Search Results
 
-## USER_QUERY
-{{USER_QUERY}}
+    ${JSON.stringify(webSearchResults)}
+
+    Question
+
+    ${userQuery}
+    `;
+};
+
+export const getFollowUpPrompt = (userQuery: string, fullAnswer: string) => {
+  return `
+    User Question:
+    ${userQuery}
+    Assistant Answer:
+    ${fullAnswer}
+    Generate exactly 3 follow up questions.
+    Return JSON only.
+    {
+      "follow_ups":[
+        "...",
+        "...",
+        "..."
+      ]
+    }
 `;
+};
+
+

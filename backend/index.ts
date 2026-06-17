@@ -1,6 +1,6 @@
 import express from "express";
 import { tavily } from "@tavily/core";
-import { SYSTEM_PROMPT } from "./prompt";
+import { SYSTEM_PROMPT, getPrompt, getFollowUpPrompt } from "./prompt";
 import Groq from "groq-sdk";
 import middleware from "./middleware";
 import cors from "cors"
@@ -62,15 +62,7 @@ app.post("/purpexility_ask", async (req, res) => {
       })}\n\n`
     );
 
-    const prompt = `
-    Web Search Results
-
-    ${JSON.stringify(webSearchResults)}
-
-    Question
-
-    ${userQuery}
-    `;
+    const PROMPT = getPrompt(webSearchResults, userQuery);
 
     //hit the LLM api and stream the response
     const stream = await groq.chat.completions.create({
@@ -81,7 +73,7 @@ app.post("/purpexility_ask", async (req, res) => {
         },
         {
           role: "user",
-          content: prompt,
+          content: PROMPT,
         },
       ],
       model: "openai/gpt-oss-20b",
@@ -105,21 +97,7 @@ app.post("/purpexility_ask", async (req, res) => {
       );
     }
 
-    const followUpPrompt = `
-    User Question:
-    ${userQuery}
-    Assistant Answer:
-    ${fullAnswer}
-    Generate exactly 3 follow up questions.
-    Return JSON only.
-    {
-      "follow_ups":[
-        "...",
-        "...",
-        "..."
-      ]
-    }
-`;
+    const followUpPrompt = getFollowUpPrompt(userQuery, fullAnswer);
 
     //second groq llm api call
     const followUps = await groq.chat.completions.create({
@@ -160,22 +138,15 @@ app.post("/purpexility_ask", async (req, res) => {
 
     //end the stream
     res.end();
-  } catch (error: any) {
-    console.error("API Request Failed:", error);
-    if (!res.headersSent) {
-      res.status(503).json({
-        error:
-          "Groq API is currently overloaded. Please try again in a few minutes.",
-      });
-    } else {
-      res.write(
-        `data: ${JSON.stringify(
-          "\n\n[ERROR: Groq API is overloaded. Please try again.]"
-        )}\n\n`
-      );
-      res.end();
-    }
+  } catch (error) {
+    console.error(error);
+    res.write(`data:${JSON.stringify({ type: "ERROR", content: "Something went wrong" })}\n\n`);
+    res.end();
   }
 });
+
+app.post("/purpexility_ask/follow_ups", async (req, res) => {
+
+})
 
 app.listen(3000, () => console.log("server is running"));
