@@ -34,6 +34,9 @@ app.get("/conversation/:id", async(req,res) => {
     const conversation = await prisma.conversation.findUnique({
       where: {
         id: req.params.id
+      },
+      include: {
+        messages: true
       }
     })
     res.json(conversation)
@@ -41,21 +44,6 @@ app.get("/conversation/:id", async(req,res) => {
     console.error(error);
     res.status(500).json({ error: "Something went wrong /coversations/:id" });
   }
-})
-
-app.get("/messages/:id", async(req, res) => {
-  try {
-    const messages = await prisma.message.findMany({
-      where: {
-        conversationId: req.params.id
-      }
-    })
-    res.json(messages)
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Something went wrong /messages/:id" });
-  }
-
 })
 
 
