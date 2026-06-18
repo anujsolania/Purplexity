@@ -25,7 +25,6 @@ model User {
 model Conversation {
   id        String    @id @default(cuid())
   title     String?
-  slug      String
   messages  Message[]
   userId    String
   user      User      @relation(fields: [userId], references: [id])

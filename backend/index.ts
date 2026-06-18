@@ -159,13 +159,10 @@ app.post("/purpexility_ask",middleware, async (req, res) => {
 
     // Create conversation and save messages to the database
     const title = userQuery.slice(0, 60);
-    const slugBase = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || "chat";
-    const slug = `${slugBase}-${Math.random().toString(36).substring(2, 7)}`;
 
     const conversation = await prisma.conversation.create({
       data: {
         title: title,
-        slug: slug,
         userId: (req as any).userId,
         followUps: parsed.follow_ups || [],
         messages: {
