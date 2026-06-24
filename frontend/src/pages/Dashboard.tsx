@@ -19,6 +19,9 @@ export default function Dashboard() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
 
+  // STEP 3 STATE: Store current search input text
+  const [query, setQuery] = useState("");
+
   // Check if user is authenticated. If not, redirect to login page.
   useEffect(() => {
     async function checkUser() {
@@ -60,6 +63,20 @@ export default function Dashboard() {
   // STEP 2: Clear active chat state for a "New Chat"
   function handleNewChat() {
     setActiveConversationId(null);
+  }
+
+  // STEP 3: Handle search query submission
+  function handleSearchSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!query.trim()) return;
+
+    console.log("Submitting query:", query);
+    
+    // Temporarily set a dummy conversation ID to transition layout to active chat
+    setActiveConversationId("temp-chat-id");
+    
+    // Clear query
+    setQuery("");
   }
 
   // Handle logging out
@@ -154,15 +171,72 @@ export default function Dashboard() {
       </aside>
 
       {/* MAIN CONTENT AREA */}
-      <main className="flex-1 flex flex-col justify-center items-center p-8 bg-radial-[at_center_top] from-zinc-900/40 via-transparent to-transparent">
-        <div className="text-center max-w-xl animate-fade-in duration-500">
-          <h2 className="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-zinc-100 to-zinc-400 bg-clip-text text-transparent mb-4">
-            Where knowledge begins.
-          </h2>
-          <p className="text-zinc-400 text-base">
-            Ask any question and DeepFind will search the web and synthesize the answer for you.
-          </p>
-        </div>
+      <main className="flex-1 flex flex-col bg-radial-[at_center_top] from-zinc-900/20 via-transparent to-transparent overflow-hidden">
+        {activeConversationId === null ? (
+          /* WELCOME STATE: Centered search bar */
+          <div className="flex-1 flex flex-col justify-center items-center p-8 max-w-3xl mx-auto w-full">
+            <div className="text-center mb-8 animate-fade-in duration-500">
+              <h2 className="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-zinc-100 to-zinc-400 bg-clip-text text-transparent mb-4">
+                Where knowledge begins.
+              </h2>
+              <p className="text-zinc-400 text-base">
+                Ask any question and DeepFind will search the web and synthesize the answer for you.
+              </p>
+            </div>
+
+            {/* Central Search Form */}
+            <form
+              onSubmit={handleSearchSubmit}
+              className="w-full bg-[#161820]/90 border border-zinc-800 hover:border-zinc-750 focus-within:border-emerald-500/50 rounded-2xl p-2 flex items-center gap-2 shadow-2xl transition duration-200"
+            >
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Ask anything..."
+                className="flex-1 bg-transparent border-0 outline-none text-zinc-100 placeholder-zinc-500 px-4 py-3 text-base focus:ring-0"
+              />
+              <button
+                type="submit"
+                className="px-6 py-3 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold rounded-xl text-sm transition duration-200 cursor-pointer shadow-md shadow-emerald-500/20"
+              >
+                Ask
+              </button>
+            </form>
+          </div>
+        ) : (
+          /* ACTIVE CONVERSATION STATE: Chat history scroll area + input at bottom */
+          <div className="flex-1 flex flex-col justify-between overflow-hidden">
+            {/* Scrollable message feed (placeholder for now) */}
+            <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-4">
+              <div className="text-zinc-500 text-sm italic">
+                Active chat messages will appear here... (Step 4)
+              </div>
+            </div>
+
+            {/* Bottom Search Form */}
+            <div className="p-6 border-t border-zinc-900 bg-[#090B11]/50 backdrop-blur-sm">
+              <form
+                onSubmit={handleSearchSubmit}
+                className="max-w-3xl mx-auto w-full bg-[#161820]/90 border border-zinc-800 hover:border-zinc-750 focus-within:border-emerald-500/50 rounded-2xl p-2 flex items-center gap-2 shadow-2xl transition duration-200"
+              >
+                <input
+                  type="text"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Ask a follow-up..."
+                  className="flex-1 bg-transparent border-0 outline-none text-zinc-100 placeholder-zinc-500 px-4 py-3 text-base focus:ring-0"
+                />
+                <button
+                  type="submit"
+                  className="px-6 py-3 bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-bold rounded-xl text-sm transition duration-200 cursor-pointer shadow-md shadow-emerald-500/20"
+                >
+                  Ask
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );
