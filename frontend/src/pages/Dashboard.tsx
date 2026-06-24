@@ -3,7 +3,7 @@ import type { User } from "@supabase/supabase-js";
 import axios from "axios";
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Plus, History, MessageSquare, LogOut, User as UserIcon } from "lucide-react";
 
 interface Conversation {
   id: string;
@@ -303,7 +303,7 @@ export default function Dashboard() {
     <div className="flex h-screen w-screen bg-[#090B11] text-zinc-100 font-sans overflow-hidden">
       {/* LEFT SIDEBAR */}
       <aside 
-        className={`bg-[#0d0e12] border-r border-zinc-800 flex flex-col justify-between p-4 shrink-0 transition-all duration-300 ease-in-out ${
+        className={`bg-gradient-to-b from-[#0e0f14] to-[#08090d] border-r border-zinc-800/60 flex flex-col justify-between p-4 shrink-0 transition-all duration-300 ease-in-out ${
           isSidebarOpen ? "w-64 opacity-100" : "w-0 p-0 border-r-0 opacity-0 overflow-hidden"
         }`}
       >
@@ -329,35 +329,48 @@ export default function Dashboard() {
             {/* New Chat Button */}
             <button
               onClick={handleNewChat}
-              className="w-full py-2.5 px-4 bg-zinc-800 hover:bg-zinc-700/80 rounded-xl font-medium transition duration-200 text-sm cursor-pointer border border-zinc-700 text-zinc-200 hover:text-zinc-100 shrink-0 text-left flex items-center justify-center"
+              className="w-full py-2.5 px-4 bg-zinc-900/60 hover:bg-emerald-500/10 border border-zinc-800 hover:border-emerald-500/30 text-zinc-300 hover:text-emerald-400 rounded-xl font-semibold transition-all duration-300 text-sm cursor-pointer shrink-0 flex items-center justify-center gap-2 group/btn shadow-[0_4px_12px_rgba(0,0,0,0.2)] hover:shadow-[0_4px_16px_rgba(16,185,129,0.1)] active:scale-98"
             >
-              + New Chat
+              <Plus className="w-4 h-4 transition-transform group-hover/btn:rotate-90 duration-300" />
+              New Chat
             </button>
 
             {/* Conversation History List */}
             <div className="flex flex-col gap-2 overflow-hidden flex-1">
-              <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider px-2 shrink-0">
-                Recent Chats
-              </span>
+              <div className="flex items-center gap-2 px-2 shrink-0">
+                <History className="w-3.5 h-3.5 text-zinc-500" />
+                <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider">
+                  Recent Chats
+                </span>
+              </div>
               
-              <div className="overflow-y-auto flex-1 pr-1">
+              <div 
+                className="overflow-y-auto flex-1 pr-1"
+                style={{ scrollbarWidth: "thin", scrollbarColor: "rgba(63, 63, 70, 0.4) transparent" }}
+              >
                 {conversations.length === 0 ? (
-                  <div className="text-zinc-500 text-xs px-2 italic mt-1">
-                    No recent conversations
+                  <div className="text-zinc-500 text-xs px-2 italic mt-2 flex items-center gap-1.5">
+                    <MessageSquare className="w-3.5 h-3.5 opacity-50" />
+                    <span>No recent conversations</span>
                   </div>
                 ) : (
-                  <div className="flex flex-col gap-1">
+                  <div className="flex flex-col gap-1 mt-1">
                     {conversations.map((chat) => (
                       <button
                         key={chat.id}
                         onClick={() => setActiveConversationId(chat.id)}
-                        className={`w-full text-left py-2 px-3 rounded-lg text-sm truncate transition duration-200 cursor-pointer ${
+                        className={`w-full text-left py-2 px-3 rounded-xl text-sm transition-all duration-200 cursor-pointer flex items-center gap-2.5 group/chat relative ${
                           activeConversationId === chat.id
-                            ? "bg-zinc-850 text-emerald-400 font-medium border border-zinc-700/50"
-                            : "text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200"
+                            ? "bg-emerald-500/10 text-emerald-400 font-medium border border-emerald-500/20 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]"
+                            : "text-zinc-400 hover:bg-zinc-900/60 hover:text-zinc-200 border border-transparent hover:border-zinc-800/50"
                         }`}
                       >
-                        {chat.title || "Untitled Chat"}
+                        <MessageSquare className={`w-4 h-4 shrink-0 transition-colors duration-200 ${
+                          activeConversationId === chat.id
+                            ? "text-emerald-400"
+                            : "text-zinc-500 group-hover/chat:text-zinc-400"
+                        }`} />
+                        <span className="truncate flex-1">{chat.title || "Untitled Chat"}</span>
                       </button>
                     ))}
                   </div>
@@ -367,20 +380,29 @@ export default function Dashboard() {
           </div>
 
           {/* Bottom Part of Sidebar */}
-          <div className="flex flex-col gap-4 border-t border-zinc-800 pt-4 shrink-0">
-            {/* User Information */}
-            <div className="px-2">
-              <div className="text-xs text-zinc-500">Logged in as:</div>
-              <div className="text-sm font-medium truncate text-zinc-300">
-                {user?.email}
+          <div className="flex flex-col gap-3 border-t border-zinc-800/80 pt-4 shrink-0">
+            {/* User Profile Card */}
+            <div className="flex items-center gap-3 p-2 rounded-xl bg-zinc-900/40 border border-zinc-800/40 hover:bg-zinc-900/60 transition duration-200">
+              <div className="w-9 h-9 rounded-lg bg-gradient-to-tr from-emerald-500/20 to-teal-500/20 border border-emerald-500/30 flex items-center justify-center font-bold text-emerald-400 shrink-0 select-none shadow-sm shadow-emerald-500/5">
+                {user?.email ? user.email.charAt(0).toUpperCase() : <UserIcon className="w-4 h-4 text-emerald-400" />}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-[10px] text-zinc-500 font-medium uppercase tracking-wider">Account</div>
+                <div className="text-sm font-semibold truncate text-zinc-300 leading-tight">
+                  {user?.email ? user.email.split('@')[0] : "User"}
+                </div>
+                <div className="text-[10px] text-zinc-500 truncate leading-none mt-0.5">
+                  {user?.email || "No email"}
+                </div>
               </div>
             </div>
 
             {/* Logout Button */}
             <button
               onClick={handleLogout}
-              className="w-full py-2 px-3 bg-red-950/30 hover:bg-red-950/60 border border-red-900/40 hover:border-red-900/60 text-red-400 rounded-lg text-sm transition duration-200 cursor-pointer font-medium"
+              className="w-full py-2 px-4 bg-zinc-900/40 hover:bg-red-950/20 hover:text-red-400 border border-zinc-800/80 hover:border-red-900/30 text-zinc-400 rounded-xl text-sm transition duration-200 cursor-pointer font-medium flex items-center justify-center gap-2 group/out active:scale-98"
             >
+              <LogOut className="w-4 h-4 transition-transform group-hover/out:-translate-x-0.5 duration-200" />
               Logout
             </button>
           </div>
