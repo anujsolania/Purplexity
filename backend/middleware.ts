@@ -17,18 +17,21 @@ export default async function middleware(req: Request, res: Response, next: Next
     }
 
     try {
-        console.log(data)
-        const res = await prisma.user.create({
-            data: {
+        await prisma.user.upsert({
+            where: { id: data.user.id },
+            update: {
                 email: data.user.email!,
+                name: data.user.user_metadata.name || "",
+            },
+            create: {
                 id: data.user.id,
-                name: data.user.user_metadata.name,
+                email: data.user.email!,
+                name: data.user.user_metadata.name || "",
                 provider: data.user.app_metadata.provider as AuthProvider,
             }
-        })
-        console.log(res)
+        });
     } catch (error) {
-        console.log("user not created cause already exists", error)
+        console.error("Failed to sync user state with database:", error);
     }
     (req as any).userId = data.user?.id;
     next();
