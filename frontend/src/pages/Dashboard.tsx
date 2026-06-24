@@ -3,6 +3,7 @@ import type { User } from "@supabase/supabase-js";
 import axios from "axios";
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router";
+import { Sparkles } from "lucide-react";
 
 interface Conversation {
   id: string;
@@ -299,11 +300,11 @@ export default function Dashboard() {
           {/* Top Part of Sidebar */}
           <div className="flex flex-col gap-6 overflow-hidden flex-1">
             {/* Logo & Branding */}
-            <div className="flex items-center gap-2 shrink-0">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-emerald-500 to-cyan-500 flex items-center justify-center font-bold text-zinc-950">
-                D
+            <div className="flex items-center gap-2.5 shrink-0 px-1">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-emerald-500 to-cyan-500 flex items-center justify-center p-1.5 shadow-[0_0_15px_rgba(16,185,129,0.25)]">
+                <Sparkles className="w-full h-full text-zinc-950 animate-pulse" />
               </div>
-              <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-zinc-50 to-zinc-400 bg-clip-text text-transparent">
+              <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-zinc-50 via-zinc-100 to-zinc-400 bg-clip-text text-transparent">
                 DeepFind
               </span>
             </div>
@@ -396,7 +397,17 @@ export default function Dashboard() {
         {activeConversationId === null ? (
           /* WELCOME STATE: Centered search bar */
           <div className="flex-1 flex flex-col justify-center items-center p-8 max-w-3xl mx-auto w-full">
-            <div className="text-center mb-8 animate-fade-in duration-500">
+            <div className="text-center mb-8 animate-fade-in duration-500 flex flex-col items-center">
+              {/* Brand Logo & Name */}
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-emerald-500 to-cyan-500 flex items-center justify-center p-2 shadow-[0_0_20px_rgba(16,185,129,0.3)]">
+                  <Sparkles className="w-full h-full text-zinc-950 animate-pulse" />
+                </div>
+                <span className="text-4xl font-bold tracking-tight bg-gradient-to-r from-zinc-50 via-zinc-100 to-zinc-400 bg-clip-text text-transparent">
+                  DeepFind
+                </span>
+              </div>
+
               <h2 className="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-zinc-100 to-zinc-400 bg-clip-text text-transparent mb-4">
                 Where knowledge begins.
               </h2>
