@@ -42,6 +42,9 @@ export default function Dashboard() {
   // Ref to automatically scroll to bottom when new messages arrive
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // Toggle sidebar state
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
   // Check if user is authenticated. If not, redirect to login page.
   useEffect(() => {
     async function checkUser() {
@@ -287,81 +290,97 @@ export default function Dashboard() {
   return (
     <div className="flex h-screen w-screen bg-[#090B11] text-zinc-100 font-sans overflow-hidden">
       {/* LEFT SIDEBAR */}
-      <aside className="w-64 bg-[#0d0e12] border-r border-zinc-800 flex flex-col justify-between p-4 shrink-0">
-        {/* Top Part of Sidebar */}
-        <div className="flex flex-col gap-6 overflow-hidden flex-1">
-          {/* Logo & Branding */}
-          <div className="flex items-center gap-2 shrink-0">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-emerald-500 to-cyan-500 flex items-center justify-center font-bold text-zinc-950">
-              D
+      <aside 
+        className={`bg-[#0d0e12] border-r border-zinc-800 flex flex-col justify-between p-4 shrink-0 transition-all duration-300 ease-in-out ${
+          isSidebarOpen ? "w-64 opacity-100" : "w-0 p-0 border-r-0 opacity-0 overflow-hidden"
+        }`}
+      >
+        <div className="w-[224px] h-full flex flex-col justify-between shrink-0">
+          {/* Top Part of Sidebar */}
+          <div className="flex flex-col gap-6 overflow-hidden flex-1">
+            {/* Logo & Branding */}
+            <div className="flex items-center gap-2 shrink-0">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-emerald-500 to-cyan-500 flex items-center justify-center font-bold text-zinc-950">
+                D
+              </div>
+              <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-zinc-50 to-zinc-400 bg-clip-text text-transparent">
+                DeepFind
+              </span>
             </div>
-            <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-zinc-50 to-zinc-400 bg-clip-text text-transparent">
-              DeepFind
-            </span>
-          </div>
 
-          {/* New Chat Button */}
-          <button
-            onClick={handleNewChat}
-            className="w-full py-2.5 px-4 bg-zinc-800 hover:bg-zinc-700/80 rounded-xl font-medium transition duration-200 text-sm cursor-pointer border border-zinc-700 text-zinc-200 hover:text-zinc-100 shrink-0 text-left flex items-center justify-center"
-          >
-            + New Chat
-          </button>
+            {/* New Chat Button */}
+            <button
+              onClick={handleNewChat}
+              className="w-full py-2.5 px-4 bg-zinc-800 hover:bg-zinc-700/80 rounded-xl font-medium transition duration-200 text-sm cursor-pointer border border-zinc-700 text-zinc-200 hover:text-zinc-100 shrink-0 text-left flex items-center justify-center"
+            >
+              + New Chat
+            </button>
 
-          {/* Conversation History List */}
-          <div className="flex flex-col gap-2 overflow-hidden flex-1">
-            <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider px-2 shrink-0">
-              Recent Chats
-            </span>
-            
-            <div className="overflow-y-auto flex-1 pr-1">
-              {conversations.length === 0 ? (
-                <div className="text-zinc-500 text-xs px-2 italic mt-1">
-                  No recent conversations
-                </div>
-              ) : (
-                <div className="flex flex-col gap-1">
-                  {conversations.map((chat) => (
-                    <button
-                      key={chat.id}
-                      onClick={() => setActiveConversationId(chat.id)}
-                      className={`w-full text-left py-2 px-3 rounded-lg text-sm truncate transition duration-200 cursor-pointer ${
-                        activeConversationId === chat.id
-                          ? "bg-zinc-850 text-emerald-400 font-medium border border-zinc-700/50"
-                          : "text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200"
-                      }`}
-                    >
-                      {chat.title || "Untitled Chat"}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom Part of Sidebar */}
-        <div className="flex flex-col gap-4 border-t border-zinc-800 pt-4 shrink-0">
-          {/* User Information */}
-          <div className="px-2">
-            <div className="text-xs text-zinc-500">Logged in as:</div>
-            <div className="text-sm font-medium truncate text-zinc-300">
-              {user?.email}
+            {/* Conversation History List */}
+            <div className="flex flex-col gap-2 overflow-hidden flex-1">
+              <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wider px-2 shrink-0">
+                Recent Chats
+              </span>
+              
+              <div className="overflow-y-auto flex-1 pr-1">
+                {conversations.length === 0 ? (
+                  <div className="text-zinc-500 text-xs px-2 italic mt-1">
+                    No recent conversations
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-1">
+                    {conversations.map((chat) => (
+                      <button
+                        key={chat.id}
+                        onClick={() => setActiveConversationId(chat.id)}
+                        className={`w-full text-left py-2 px-3 rounded-lg text-sm truncate transition duration-200 cursor-pointer ${
+                          activeConversationId === chat.id
+                            ? "bg-zinc-850 text-emerald-400 font-medium border border-zinc-700/50"
+                            : "text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200"
+                        }`}
+                      >
+                        {chat.title || "Untitled Chat"}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
-          {/* Logout Button */}
-          <button
-            onClick={handleLogout}
-            className="w-full py-2 px-3 bg-red-950/30 hover:bg-red-950/60 border border-red-900/40 hover:border-red-900/60 text-red-400 rounded-lg text-sm transition duration-200 cursor-pointer font-medium"
-          >
-            Logout
-          </button>
+          {/* Bottom Part of Sidebar */}
+          <div className="flex flex-col gap-4 border-t border-zinc-800 pt-4 shrink-0">
+            {/* User Information */}
+            <div className="px-2">
+              <div className="text-xs text-zinc-500">Logged in as:</div>
+              <div className="text-sm font-medium truncate text-zinc-300">
+                {user?.email}
+              </div>
+            </div>
+
+            {/* Logout Button */}
+            <button
+              onClick={handleLogout}
+              className="w-full py-2 px-3 bg-red-950/30 hover:bg-red-950/60 border border-red-900/40 hover:border-red-900/60 text-red-400 rounded-lg text-sm transition duration-200 cursor-pointer font-medium"
+            >
+              Logout
+            </button>
+          </div>
         </div>
       </aside>
 
       {/* MAIN CONTENT AREA */}
-      <main className="flex-1 flex flex-col bg-radial-[at_center_top] from-zinc-900/20 via-transparent to-transparent overflow-hidden">
+      <main className="flex-1 flex flex-col bg-radial-[at_center_top] from-zinc-900/20 via-transparent to-transparent overflow-hidden relative">
+        {/* Toggle Sidebar Button */}
+        <button
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          className="absolute top-4 left-4 p-2 bg-[#0d0e12]/80 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 text-zinc-400 hover:text-zinc-200 rounded-lg transition duration-200 z-50 cursor-pointer flex items-center justify-center shadow-lg backdrop-blur-sm"
+          title={isSidebarOpen ? "Collapse Sidebar" : "Expand Sidebar"}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+          </svg>
+        </button>
         {activeConversationId === null ? (
           /* WELCOME STATE: Centered search bar */
           <div className="flex-1 flex flex-col justify-center items-center p-8 max-w-3xl mx-auto w-full">
