@@ -63,6 +63,13 @@ export default function Dashboard() {
     }
   }, [user]);
 
+  // STEP 5 EFFECT: Fetch conversation messages when an active conversation is clicked
+  useEffect(() => {
+    if (activeConversationId) {
+      fetchConversationDetails(activeConversationId);
+    }
+  }, [activeConversationId]);
+
   // STEP 4 EFFECT: Scroll to bottom when messages or streaming state changes
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -82,6 +89,38 @@ export default function Dashboard() {
       setConversations(response.data);
     } catch (error) {
       console.error("Error fetching conversations:", error);
+    }
+  }
+
+  // STEP 5 API: Fetch conversation details (messages, followUps) from backend
+  async function fetchConversationDetails(id: string) {
+    // If it's a temporary ID for streaming new queries, don't fetch from DB
+    if (id === "new-temp" || id === "temp-chat-id") return;
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      const response = await axios.get(`http://localhost:3000/conversation/${id}`, {
+        headers: {
+          Authorization: session.access_token,
+        },
+      });
+
+      const conversationData = response.data;
+      if (conversationData) {
+        // Map messages into our local state structure
+        const formattedMessages: Message[] = conversationData.messages.map((msg: any) => ({
+          role: msg.role,
+          content: msg.content,
+        }));
+        
+        setMessages(formattedMessages);
+        setFollowUps(conversationData.followUps || []);
+        setSources([]); // Clear sources as database doesn't persist sources
+      }
+    } catch (error) {
+      console.error("Error fetching conversation details:", error);
     }
   }
 
