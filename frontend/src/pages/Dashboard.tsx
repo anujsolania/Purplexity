@@ -46,6 +46,13 @@ export default function Dashboard() {
   // Toggle sidebar state
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
+  // Close sidebar on mobile devices by default
+  useEffect(() => {
+    if (window.innerWidth < 768) {
+      setIsSidebarOpen(false);
+    }
+  }, []);
+
   // Check if user is authenticated. If not, redirect to login page.
   useEffect(() => {
     async function checkUser() {
@@ -134,6 +141,9 @@ export default function Dashboard() {
     setMessages([]);
     setSources([]);
     setFollowUps([]);
+    if (window.innerWidth < 768) {
+      setIsSidebarOpen(false);
+    }
   }
 
   // STEP 6: Execute search query (handles both new conversations and follow-up streaming)
@@ -301,10 +311,20 @@ export default function Dashboard() {
 
   return (
     <div className="flex h-screen w-screen bg-[#090B11] text-zinc-100 font-sans overflow-hidden">
+      {/* MOBILE SIDEBAR OVERLAY BACKDROP */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/60 backdrop-blur-xs z-40 md:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
       {/* LEFT SIDEBAR */}
       <aside 
-        className={`bg-gradient-to-b from-[#0e0f14] to-[#08090d] border-r border-zinc-800/60 flex flex-col justify-between p-4 shrink-0 transition-all duration-300 ease-in-out ${
-          isSidebarOpen ? "w-64 opacity-100" : "w-0 p-0 border-r-0 opacity-0 overflow-hidden"
+        className={`bg-gradient-to-b from-[#0e0f14] to-[#08090d] border-r border-zinc-800/60 flex flex-col justify-between p-4 shrink-0 transition-all duration-300 ease-in-out fixed inset-y-0 left-0 z-45 md:relative md:inset-auto md:z-auto ${
+          isSidebarOpen 
+            ? "w-64 translate-x-0 opacity-100" 
+            : "-translate-x-full w-0 p-0 border-r-0 opacity-0 overflow-hidden md:w-0 md:translate-x-0"
         }`}
       >
         <div className="w-[224px] h-full flex flex-col justify-between shrink-0">
@@ -358,7 +378,12 @@ export default function Dashboard() {
                     {conversations.map((chat) => (
                       <button
                         key={chat.id}
-                        onClick={() => setActiveConversationId(chat.id)}
+                        onClick={() => {
+                          setActiveConversationId(chat.id);
+                          if (window.innerWidth < 768) {
+                            setIsSidebarOpen(false);
+                          }
+                        }}
                         className={`w-full text-left py-2 px-3 rounded-xl text-sm transition-all duration-200 cursor-pointer flex items-center gap-2.5 group/chat relative ${
                           activeConversationId === chat.id
                             ? "bg-emerald-500/10 text-emerald-400 font-medium border border-emerald-500/20 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]"
@@ -414,7 +439,9 @@ export default function Dashboard() {
         {/* Toggle Sidebar Button */}
         <button
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          className="absolute top-4 left-4 p-2 bg-[#0d0e12]/80 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 text-zinc-400 hover:text-zinc-200 rounded-lg transition duration-200 z-50 cursor-pointer flex items-center justify-center shadow-lg backdrop-blur-sm"
+          className={`absolute top-4 p-2 bg-[#0d0e12]/80 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 text-zinc-400 hover:text-zinc-200 rounded-lg transition-all duration-300 z-50 cursor-pointer flex items-center justify-center shadow-lg backdrop-blur-sm ${
+            isSidebarOpen ? "left-[272px] md:left-4" : "left-4"
+          }`}
           title={isSidebarOpen ? "Collapse Sidebar" : "Expand Sidebar"}
         >
           {isSidebarOpen ? (
