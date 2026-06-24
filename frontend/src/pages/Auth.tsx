@@ -86,13 +86,19 @@ export default function Auth() {
 
             <div className="relative z-10 w-full max-w-md">
                 {/* Brand Logo & Slogan Header */}
-                <div className="flex flex-col items-center mb-8 animate-fade-in duration-700">
-                    <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-tr from-emerald-500 to-cyan-500 p-2.5 shadow-[0_0_20px_rgba(16,185,129,0.3)] mb-4">
-                        <Sparkles className="w-full h-full text-zinc-950" />
+                <div className="flex flex-col items-center mb-8 animate-fade-in duration-700 group cursor-default">
+                    <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-tr from-emerald-500 via-teal-500 to-cyan-500 p-2.5 shadow-[0_0_20px_rgba(16,185,129,0.3)] mb-4 group-hover:shadow-[0_0_30px_rgba(16,185,129,0.55)] group-hover:scale-105 transition-all duration-500">
+                        <Sparkles className="w-full h-full text-zinc-950 group-hover:rotate-[360deg] transition-transform duration-[1200ms] ease-out" />
                     </div>
-                    <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-zinc-50 via-zinc-100 to-zinc-400 bg-clip-text text-transparent">
-                        DeepFind
-                    </h1>
+                    <div className="flex items-baseline gap-0.5">
+                        <span className="text-3xl font-light tracking-tight text-zinc-100">
+                            Deep
+                        </span>
+                        <span className="text-3xl font-black tracking-tight bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent drop-shadow-[0_0_10px_rgba(52,211,153,0.2)] group-hover:brightness-110 transition duration-500">
+                            Find
+                        </span>
+                        <span className="w-2 h-2 rounded-full bg-cyan-400 ml-1.5 animate-pulse shrink-0" style={{ animationDuration: "2s" }} />
+                    </div>
                     <p className="text-sm text-zinc-400 mt-2">
                         Where knowledge begins.
                     </p>

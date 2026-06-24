@@ -282,8 +282,19 @@ export default function Dashboard() {
   // Show a basic loading state while verifying authentication
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#090B11] text-zinc-100 font-sans">
-        <div className="text-lg">Loading DeepFind...</div>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#090B11] text-zinc-100 font-sans relative overflow-hidden">
+        {/* Subtle background glow */}
+        <div className="absolute w-[300px] h-[300px] rounded-full bg-emerald-500/5 blur-[80px]" />
+        <div className="flex items-center gap-3 animate-pulse">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-emerald-500 via-teal-500 to-cyan-500 flex items-center justify-center p-1.5 shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+            <Sparkles className="w-full h-full text-zinc-950 animate-spin" style={{ animationDuration: "3s" }} />
+          </div>
+          <div className="flex items-baseline gap-0.5">
+            <span className="text-xl font-medium tracking-tight text-zinc-100">Deep</span>
+            <span className="text-xl font-extrabold tracking-tight bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">Find</span>
+          </div>
+        </div>
+        <div className="text-xs text-zinc-500 mt-4 tracking-widest uppercase animate-pulse">Initializing Agent...</div>
       </div>
     );
   }
@@ -300,13 +311,19 @@ export default function Dashboard() {
           {/* Top Part of Sidebar */}
           <div className="flex flex-col gap-6 overflow-hidden flex-1">
             {/* Logo & Branding */}
-            <div className="flex items-center gap-2.5 shrink-0 px-1">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-emerald-500 to-cyan-500 flex items-center justify-center p-1.5 shadow-[0_0_15px_rgba(16,185,129,0.25)]">
-                <Sparkles className="w-full h-full text-zinc-950 animate-pulse" />
+            <div className="flex items-center gap-2.5 shrink-0 px-1 group cursor-pointer">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-emerald-500 via-teal-500 to-cyan-500 flex items-center justify-center p-1.5 shadow-[0_0_15px_rgba(16,185,129,0.25)] group-hover:shadow-[0_0_20px_rgba(16,185,129,0.5)] group-hover:scale-105 transition-all duration-300">
+                <Sparkles className="w-full h-full text-zinc-950 group-hover:rotate-[360deg] transition-transform duration-[1200ms] ease-out" />
               </div>
-              <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-zinc-50 via-zinc-100 to-zinc-400 bg-clip-text text-transparent">
-                DeepFind
-              </span>
+              <div className="flex items-baseline gap-0.5">
+                <span className="text-xl font-medium tracking-tight text-zinc-100 group-hover:text-zinc-200 transition-colors duration-200">
+                  Deep
+                </span>
+                <span className="text-xl font-extrabold tracking-tight bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent drop-shadow-[0_0_8px_rgba(52,211,153,0.15)] group-hover:brightness-110 transition duration-300">
+                  Find
+                </span>
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 ml-0.5 animate-pulse shrink-0" style={{ animationDuration: "2s" }} />
+              </div>
             </div>
 
             {/* New Chat Button */}
@@ -397,15 +414,29 @@ export default function Dashboard() {
         {activeConversationId === null ? (
           /* WELCOME STATE: Centered search bar */
           <div className="flex-1 flex flex-col justify-center items-center p-8 max-w-3xl mx-auto w-full">
-            <div className="text-center mb-8 animate-fade-in duration-500 flex flex-col items-center">
+            <div className="text-center mb-8 animate-fade-in duration-500 flex flex-col items-center group cursor-default">
               {/* Brand Logo & Name */}
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-emerald-500 to-cyan-500 flex items-center justify-center p-2 shadow-[0_0_20px_rgba(16,185,129,0.3)]">
-                  <Sparkles className="w-full h-full text-zinc-950 animate-pulse" />
+              <div className="flex flex-col items-center mb-4">
+                <div className="flex items-center gap-3.5 mb-2.5">
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-500 via-teal-500 to-cyan-500 flex items-center justify-center p-3 shadow-[0_0_25px_rgba(16,185,129,0.3)] group-hover:shadow-[0_0_35px_rgba(16,185,129,0.55)] group-hover:scale-105 transition-all duration-500">
+                    <Sparkles className="w-full h-full text-zinc-950 group-hover:rotate-[360deg] transition-transform duration-[1200ms] ease-out" />
+                  </div>
+                  <div className="flex items-baseline gap-0.5">
+                    <span className="text-5xl font-light tracking-tight text-zinc-100">
+                      Deep
+                    </span>
+                    <span className="text-5xl font-black tracking-tight bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(52,211,153,0.2)] group-hover:brightness-110 transition duration-500">
+                      Find
+                    </span>
+                    <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 ml-1.5 animate-pulse shrink-0" style={{ animationDuration: "2s" }} />
+                  </div>
                 </div>
-                <span className="text-4xl font-bold tracking-tight bg-gradient-to-r from-zinc-50 via-zinc-100 to-zinc-400 bg-clip-text text-transparent">
-                  DeepFind
-                </span>
+                
+                {/* Creative, modern badge */}
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-bold tracking-widest text-emerald-400 uppercase select-none shadow-[0_2px_10px_rgba(16,185,129,0.05)]">
+                  <span className="w-1 h-1 rounded-full bg-emerald-400 animate-pulse" />
+                  Search Synthesis Engine
+                </div>
               </div>
 
               <h2 className="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-zinc-100 to-zinc-400 bg-clip-text text-transparent mb-4">
@@ -450,9 +481,16 @@ export default function Dashboard() {
                     }`}
                   >
                     {/* Speaker Header */}
-                    <span className="text-xs text-zinc-500 font-semibold uppercase tracking-wider">
-                      {message.role === "User" ? "You" : "DeepFind"}
-                    </span>
+                    {message.role === "User" ? (
+                      <span className="text-xs text-zinc-500 font-semibold uppercase tracking-wider">
+                        You
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-emerald-400">
+                        <Sparkles className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                        DeepFind
+                      </span>
+                    )}
 
                     {/* Message Bubble */}
                     <div
@@ -494,7 +532,8 @@ export default function Dashboard() {
                 {/* Streaming/Thinking Loader */}
                 {isStreaming && messages[messages.length - 1]?.role === "User" && (
                   <div className="flex flex-col gap-2 items-start">
-                    <span className="text-xs text-zinc-500 font-semibold uppercase tracking-wider">
+                    <span className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-emerald-400">
+                      <Sparkles className="w-3.5 h-3.5 text-emerald-400 shrink-0 animate-pulse" />
                       DeepFind
                     </span>
                     <div className="p-4 rounded-2xl text-sm text-zinc-400 italic bg-transparent">
